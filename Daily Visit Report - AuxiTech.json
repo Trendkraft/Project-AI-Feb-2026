@@ -1,0 +1,362 @@
+{
+  "name": "Daily Visit Report - AuxiTech",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -992,
+        -224
+      ],
+      "id": "6ffdfebc-a588-4058-bcde-ddb48aa09b14",
+      "name": "Telegram Trigger",
+      "webhookId": "e719df69-f446-4599-a5a0-ac224ae800c4",
+      "credentials": {
+        "telegramApi": {
+          "id": "qS6hy3irQU2g3Wd5",
+          "name": "AuxitechAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// This version parses plain line-by-line Telegram messages like:\n// Ramesh\n// ABC PVT\n// JOHN\n// 9999999\n// DEMO EXP\n\nconst text = $json.message.text;\nconst lines = text.split('\\n').map(l => l.trim()).filter(l => l !== '');\n\n// Extract fields based on order\nconst dealerName = lines[0] || '';\nconst customerName = lines[1] || '';\nconst contactPerson = lines[2] || '';\nconst contactNumber = lines[3] || '';\nconst action = lines[4] || '';\n\n// Auto-format date (DD-MM-YYYY)\nconst now = new Date();\nconst day = String(now.getDate()).padStart(2, '0');\nconst month = String(now.getMonth() + 1).padStart(2, '0');\nconst year = now.getFullYear();\nconst date = `${day}-${month}-${year}`;\n\nreturn [{\n  json: {\n    Date: date,\n    'Dealer Name': dealerName,\n    'Customer Name': customerName,\n    'Contact Person': contactPerson,\n    'Contact Number': contactNumber,\n    Action: action\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -848,
+        -224
+      ],
+      "id": "d22df4f9-a49b-4ada-81ef-dc9b22362106",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "=✅ Report saved successfully! ",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -512,
+        -224
+      ],
+      "id": "0bbeffc0-6173-45e4-99f3-fd4913cad5c6",
+      "name": "Send a text message",
+      "webhookId": "071be35f-08b0-4ba0-82fc-c03ba7780769",
+      "credentials": {
+        "telegramApi": {
+          "id": "qS6hy3irQU2g3Wd5",
+          "name": "AuxitechAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1GWNMTmtogMbNP3CBZGfZ19hnlk3by5QBpPM0wXaKRv0",
+          "mode": "list",
+          "cachedResultName": "Auxitexch AI_Report",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GWNMTmtogMbNP3CBZGfZ19hnlk3by5QBpPM0wXaKRv0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GWNMTmtogMbNP3CBZGfZ19hnlk3by5QBpPM0wXaKRv0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Dealer Name": "={{$json[\"Dealer Name\"]}}",
+            "Date": "={{ $json.Date }}",
+            "Customer Name": "={{ $json['Customer Name'] }}",
+            "Contact Person": "={{ $json['Contact Person'] }}",
+            "Contact Number": "={{ $json['Contact Number'] }}",
+            "Action": "={{ $json.Action }}",
+            "sender": "={{ $('Telegram Trigger').item.json.message.chat.first_name }}"
+          },
+          "matchingColumns": [
+            "Date"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sender",
+              "displayName": "sender",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Dealer Name",
+              "displayName": "Dealer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contact Person",
+              "displayName": "Contact Person",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contact Number",
+              "displayName": "Contact Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Action",
+              "displayName": "Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -672,
+        -224
+      ],
+      "id": "5902b6cf-a94c-4d45-b7ad-6be0e905b57b",
+      "name": "Report Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aqkaM54Q77Yuas9d",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1GWNMTmtogMbNP3CBZGfZ19hnlk3by5QBpPM0wXaKRv0",
+          "mode": "list",
+          "cachedResultName": "Auxitexch AI_Report",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GWNMTmtogMbNP3CBZGfZ19hnlk3by5QBpPM0wXaKRv0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GWNMTmtogMbNP3CBZGfZ19hnlk3by5QBpPM0wXaKRv0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -816,
+        -32
+      ],
+      "id": "74c2b1d7-928a-433a-be32-a8009757a9ae",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aqkaM54Q77Yuas9d",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -672,
+        -32
+      ],
+      "id": "77efecc2-67ab-44e2-960c-58f7d7ddf558",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "sendTo": "tamilshara@gmail.com",
+        "subject": "Weekly Report_AI",
+        "message": "=Dear Sir, \nKindly find the attached Weekly report file. \n\nThanks and regards, \nS.Tamilselvan",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -512,
+        -32
+      ],
+      "id": "d4499c1c-1b5b-4efc-9bdc-e65ad3c67236",
+      "name": "Send a message",
+      "webhookId": "8e63409f-e341-45b4-8949-4826628d78d6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IXiq9f9nQ7DMtsTv",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -992,
+        -32
+      ],
+      "id": "7ac37a14-518a-4d81-a5e0-b439387d2a69",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Report Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Report Sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ca89e121-5be1-4651-b091-403120501e0e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5b357a0af2738fd75ef6446f2fd709c7d263e1541b1ac97a3cdeb6c44e26a929"
+  },
+  "id": "V0z3JbbnEJFPj1Uy",
+  "tags": []
+}
